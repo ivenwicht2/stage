@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+from mail import email
 if not os.path.exists("log"):
      os.makedirs("log")
 
@@ -17,5 +17,6 @@ def log(device,timestamp):
         if ligne.find(device) != -1 :
             ok = 0
     if ok == 1 :
-        fichier.write("{} :: {}",device,timestamp)
+        fichier.write("{} :: {}".format(device,timestamp))
+        email("{} :: {}".format(device,timestamp))
 
