@@ -17,6 +17,6 @@ def log(device,timestamp):
         if ligne.find(device) != -1 :
             ok = 0
     if ok == 1 :
-        fichier.write("{} :: {}".format(device,timestamp))
-        email("{} :: {}".format(device,timestamp))
+        fichier.write("{} :: {}\n".format(device,timestamp))
+        email("{} :: {}\n".format(device,timestamp))
 
