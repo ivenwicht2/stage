@@ -8,6 +8,26 @@ from datetime import datetime
 #APPID  = "ports-v2"
 #PSW    = 'ttn-account-v2.jFwbmUV-yqeQCW3q26YrW1K5T5OuPTd1HFPYLYwcRWE'
 
+# distance de test
+distance = 1500 
+#tolerance de distance de test +/-
+tolerance_d = 30 
+#valeur min  de bat
+bat = 250
+#valeur pressure 
+pressure = 1000
+#valeur pressure +/-
+tolerance_p = 50
+#valeur max ratio
+ratio = 50
+#valeur temperature
+temperature = 24
+#tolerance de la temperature
+tolerance_t = 3
+#valeur min de value
+value = 200
+
+conf =[bat,distance,tolerance_d,pressure,tolerance_p,ratio,temperature,tolerance_t,value]
 
 APPEUI  = sys.argv[2]
 APPID   = sys.argv[1]
@@ -22,7 +42,7 @@ def on_message(mqttc,obj,msg):
     try:
          x = json.loads(msg.payload.decode('utf-8'))
          #if int(x['port']) == 128 : print(x)
-         log_device(x,APPEUI)               
+         log_device(x,APPID,conf)               
 
     except Exception as e:
          print(e)

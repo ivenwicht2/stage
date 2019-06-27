@@ -2,13 +2,12 @@ import datetime
 import json
 import base64
 
-def log_device(x,pt):
+def log_device(x,pt,conf):
     
-   # print(x)
     ok = "OK"
     date = datetime.datetime.now()
     if x["port"]==128:
-        if int(x["payload_fields"]["bat"])<250: 
+        if int(x["payload_fields"]["bat"])<conf[0]: 
             ok = "NOK"
             print("error  bat:      {}".format(x["payload_fields"]['bat']))
         if int(x["payload_fields"]['hour'])!=date.hour : 
@@ -20,10 +19,10 @@ def log_device(x,pt):
         if int(x["payload_fields"]['presence']) != 1 : 
             ok = "NOK"
             print("error  presence: {}".format(x["payload_fields"]['hour']))
-        if int(x["payload_fields"]['pressure']) < 950 or int(x["payload_fields"]['pressure']) > 1040 : 
+        if int(x["payload_fields"]['pressure']) < conf[3] - conf[4]  or int(x["payload_fields"]['pressure']) > conf[3] + conf[4] : 
             ok = "NOK"
             print("error pressure:  {}".format(x["payload_fields"]['pressure']))
-        if int(x["payload_fields"]['ratio']) > 50 : 
+        if int(x["payload_fields"]['ratio']) > conf[5] : 
             ok = "NOK"
             print("error ratio:     {}".format(x["payload_fields"]['ratio']))
         hexa = str(base64.b64decode(x['payload_raw']).hex())
@@ -31,18 +30,38 @@ def log_device(x,pt):
         for i in range(nomb):
             index = int( hexa[2+(i*4): 4+(i*4)],16 )
             value = int(hexa[4+(i*4):6+(i*4)],16)
-            if (value*16*2.137) > 8000 : 
-                ok ="NOK"
-                print("error index: {} {}".format(i,index))
-            if value > 255 : 
+            index = round(index * 16 *2.137)
+            if index <= conf[1] + conf[2] and  index >= conf[1] - conf[2] and value > conf[8] and value < 250 :
+                ok ="OK"
+                print("index : {} value : {}".format(index,value))
+                break
+            else :
                 ok = "NOK"
-                print("error value: {} {}".format(i,value))
+                print("error index: {} {}".format(index,value))
+           #  if value > 255 : 
+           #     ok = "NOK"
+           #     print("error value: {} {}".format(i,value))
     
                 
 
-        print(x['dev_id'] + ' {}'.format(ok)) 
+        print(x['dev_id'] + ' {}'.format(ok))
+        gtw=""
+        gateways = x["metadata"]["gateways"]
+        for gw in gateways:
+            gtw= ',' + gw['time'] + ',' + str(gw['rf_chain']) + ',' + str(gw['snr']) + ',' + str(gw['channel']) + ',' + str(gw['rssi'])+ ',' + str(gw['longitude']) + ',' + gw['gtw_id'] + ',' + gw['location_source'] + ',' + str(gw['latitude']) + ',' + str(gw['timestamp'])
+                    
 
-        #message = x['dev_id'] + ' {} '.format(ok) + x 
-        #files = open('{}.txt'.format(pt),'a')
-        #files.write("{}\n".format(message))
-        #files.close()
+
+
+
+
+
+
+
+#        print(str( x['metadata']['gateways']['rf_chain']))       
+        message = x['dev_id'] + ' {}'.format(ok) + ','+ str(base64.b64decode(x['payload_raw']).hex()) + ',' + str(x["hardware_serial"])+','+str(x["port"])+ ',' + x['metadata']['data_rate'] +','+ x['metadata']['time']+gtw+','+ x['metadata']['coding_rate']+','+ str(x['metadata']['frequency'])+','+ str(x['metadata']['airtime'])+','+ x['app_id']+','+"{}".format(x['is_retry'])+','+ str(x['counter'])+','+str( x['payload_fields'])+','+x['dev_id']
+
+ 
+        files = open('{}.txt'.format(pt),'a')
+        files.write("{}\n".format(message))
+        files.close()
