@@ -27,22 +27,18 @@ def log_device(x,pt,conf):
             print("error ratio:     {}".format(x["payload_fields"]['ratio']))
         hexa = str(base64.b64decode(x['payload_raw']).hex())
         nomb = (len(hexa) - 14)//4
+        index_test = 0
         for i in range(nomb):
             index = int( hexa[2+(i*4): 4+(i*4)],16 )
             value = int(hexa[4+(i*4):6+(i*4)],16)
             index = round(index * 16 *2.137)
             if index <= conf[1] + conf[2] and  index >= conf[1] - conf[2] and value > conf[8] and value < 250 :
-                ok ="OK"
+                index_test = 1
                 print("index : {} value : {}".format(index,value))
-                break
             else :
-                ok = "NOK"
                 print("error index: {} {}".format(index,value))
-           #  if value > 255 : 
-           #     ok = "NOK"
-           #     print("error value: {} {}".format(i,value))
     
-                
+        if index_test == 0 : ok = "NOK"
 
         print(x['dev_id'] + ' {}'.format(ok))
         gtw=""

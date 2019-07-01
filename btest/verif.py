@@ -10,6 +10,7 @@ from log_device import log_device
 config = configparser.ConfigParser()
 config.read('config.txt')
 
+print("prise en compte de la configuration")
 bat = int(config['DEFAULT']['bat'])
 distance = int(config['DEFAULT']['distance'])
 tolerance_d =int(config['DEFAULT']['tolerance_d'])
@@ -26,7 +27,7 @@ APPEUI  = config['DEFAULT']['APPEUI']
 APPID   = config['DEFAULT']['APPID']
 PSW     = config['DEFAULT']['PSW']
 
-
+print("configuration prise en compte..")
 
 def on_connect(mqttc, mosq, obj,rc):
     print("Connected with result code:"+str(rc))
