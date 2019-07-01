@@ -2,36 +2,29 @@ import paho.mqtt.client as mqtt
 import json
 import base64
 import sys 
-from log_device import log_device
+import configparser
 from datetime import datetime
-#APPEUI = "70B3D57ED001DEAF"
-#APPID  = "ports-v2"
-#PSW    = 'ttn-account-v2.jFwbmUV-yqeQCW3q26YrW1K5T5OuPTd1HFPYLYwcRWE'
+from log_device import log_device
 
-# distance de test
-distance = 1500 
-#tolerance de distance de test +/-
-tolerance_d = 30 
-#valeur min  de bat
-bat = 250
-#valeur pressure 
-pressure = 1000
-#valeur pressure +/-
-tolerance_p = 50
-#valeur max ratio
-ratio = 50
-#valeur temperature
-temperature = 24
-#tolerance de la temperature
-tolerance_t = 3
-#valeur min de value
-value = 200
+
+config = configparser.ConfigParser()
+config.read('config.txt')
+
+bat = int(config['DEFAULT']['bat'])
+distance = int(config['DEFAULT']['distance'])
+tolerance_d =int(config['DEFAULT']['tolerance_d'])
+pressure = int(config['DEFAULT']['pressure'])
+tolerance_p = int(config['DEFAULT']['tolerance_p'])
+ratio = int(config['DEFAULT']['ratio'])
+temperature = int(config['DEFAULT']['temperature'])
+tolerance_t =  int(config['DEFAULT']['tolerance_t'])
+value = int(config['DEFAULT']['value'])
 
 conf =[bat,distance,tolerance_d,pressure,tolerance_p,ratio,temperature,tolerance_t,value]
 
-APPEUI  = sys.argv[2]
-APPID   = sys.argv[1]
-PSW     = sys.argv[3]
+APPEUI  = config['DEFAULT']['APPEUI']
+APPID   = config['DEFAULT']['APPID']
+PSW     = config['DEFAULT']['PSW']
 
 
 

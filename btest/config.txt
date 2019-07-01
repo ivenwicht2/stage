@@ -1,0 +1,26 @@
+[DEFAULT]	
+#nom de l'application
+APPID  = ports_v2
+#APPEUI de l'application
+APPEUI = 70B3D57ED001E3A3
+#Mot de passe de l'application APPKEY
+PSW    = ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88
+# distance de test
+distance = 1500 
+#tolerance de distance de test +/-
+tolerance_d = 30 
+#valeur min  de bat
+bat = 250
+#valeur pressure 
+pressure = 1000
+#valeur pressure +/-
+tolerance_p = 50
+#valeur max ratio
+ratio = 50
+#valeur temperature
+temperature = 24
+#tolerance de la temperature
+tolerance_t = 3
+#valeur min de value
+value = 200
+
