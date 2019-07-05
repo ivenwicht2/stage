@@ -18,21 +18,31 @@ for key in device_0 : device.setdefault(key,'0')
 
 def newmessage():
     text = ''
-    i = 8
+    text2= ''
+    i = 9
+    i2= 9
     for key in device :
-        if i % 7 == 1 : text = text + '\n'
-        text = text + "  " + key + " " + device[key]
-        i+=1
-    return text
+        arg = device[key]
+        if arg == '1' :
+            if i % 7 == 1 : text = text + '\n'
+            text = text + "  " + key
+            i+=1
+        if arg == '0' :
+            if i2 % 7 == 1 : text2 = text2 + '\n'
+            text2 = text2 + "  " + key 
+            i2+=1
+    print(text)
+    print('\n')
+    print(text2)
+    label2.config(text=text2,bg="red")
+    label.config(text=text,bg = "green")
 
 
 def on_message(mqttsub, obj, msg):
     x = json.loads(msg.payload.decode('utf-8'))
     if x['dev_id'] in device :
-        device[x['dev_id']] = 'UP'
-        message = newmessage()
-        label.config(text=message)
-        label.place(x= 0,y=0)
+        device[x['dev_id']] = '1'
+        newmessage()
 
 mqttsub = mqtt.Client()
 mqttsub.on_message = on_message
@@ -42,9 +52,12 @@ mqttsub.subscribe("+/devices/+/up")
 
 rootWindow = Tk()
 rootWindow.title('MQTT monitor')
-rootWindow.geometry("450x200")
-message = newmessage()
-label = Label(rootWindow, text=message)
-label.place(x= 0,y=0)
+rootWindow.geometry("500x200")
+label = Label(rootWindow)
+label.grid(row=1)
+label2 = Label(rootWindow)
+label2.grid(row=2)
+newmessage()
+
 mqttsub.loop_start() 
 rootWindow.mainloop()
