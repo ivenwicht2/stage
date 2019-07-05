@@ -2,38 +2,49 @@
 import paho.mqtt.client as mqtt
 from tkinter import *
 import json
+import configparser
 
+config = configparser.ConfigParser()
+config.read('config.txt')
 
-device = {'000262':'0','000448':'0','000251':'0'}
+APPEUI  = config['DEFAULT']['APPEUI']
+APPID   = config['DEFAULT']['APPID']
+PSW     = config['DEFAULT']['PSW']
+
+device_0 = config['DEFAULT']['device'].split(',')
+device = {}
+for key in device_0 : device.setdefault(key,'0')
 
 
 def newmessage():
     text = ''
+    i = 8
     for key in device :
-        if device[key] == '1':
-            text = text + key + '    '  + device[key] + '\n'
-        if device[key] == '0':
-            text = key + '    ' + device[key] + '\n' + text
+        if i % 7 == 1 : text = text + '\n'
+        text = text + "  " + key + " " + device[key]
+        i+=1
     return text
 
 
 def on_message(mqttsub, obj, msg):
     x = json.loads(msg.payload.decode('utf-8'))
     if x['dev_id'] in device :
-        device[x['dev_id']] = '1'
+        device[x['dev_id']] = 'UP'
         message = newmessage()
         label.config(text=message)
+        label.place(x= 0,y=0)
+
 mqttsub = mqtt.Client()
 mqttsub.on_message = on_message
 mqttsub.username_pw_set('ports_v2','ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88')
 mqttsub.connect("eu.thethings.network",1883,60)
-mqttsub.subscribe("+/devices/+/up")  # CHANGE ME 
+mqttsub.subscribe("+/devices/+/up")   
 
 rootWindow = Tk()
 rootWindow.title('MQTT monitor')
-rootWindow.geometry("500x500")
+rootWindow.geometry("450x200")
 message = newmessage()
 label = Label(rootWindow, text=message)
 label.place(x= 0,y=0)
-mqttsub.loop_start() # Don't use loop_forever() as it blocks.
+mqttsub.loop_start() 
 rootWindow.mainloop()
