@@ -1,0 +1,8 @@
+[DEFAULT]	
+#nom de l'application
+APPID  = ports_v2
+#APPEUI de l'application
+APPEUI = 70B3D57ED001E3A3
+#Mot de passe de l'application APPKEY
+PSW    = ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88
+
