@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import paho.mqtt.client as mqtt
 from tkinter import *
+from tkinter import *
+import tkinter as tk
 import json
 import configparser
 import pandas as pd
@@ -18,31 +20,36 @@ device = {}
 for col in df.Ncapteur :
         device.setdefault(col,[datetime.now(),'0',0,'0'])
 
+def MyLabel(master,nbc,nbr,dev,txt):
+        frame = Frame(master)
+        frame.grid(column=nbc,row=nbr)
+        label = Label(frame, text=dev,width=6,font=('Arial', 12), fg='#88F').grid(row=0,column = 0)
+        if txt  > 0 :  button=Button(frame, text=str(int(txt)), fg='white', bg='#44F',width=1).grid(row=0,column=2)
+        else :  button=Button(frame, text="", fg='white', bg='red',width=1).grid(row=0,column=2)
+
+
+
 
 def newmessage():
-    text = ''
-    text2= ''
-    i = 16
-    i2= 16
-    for key in device :
-        arg = device[key][1]
-        if arg ==  '1' :
-            time = abs((datetime.now()-device[key][0])).total_seconds()
-            print("time: " + str(time) + " real_time: " + str(device[key][2]))
-            if int(time) >  int(device[key][2])  : 
-                    device[key][2] = int(time)
-            if device[key][3] == '1':
-                device[key][3] == '0'
-                device[key][0] = datetime.now()
-            if i % 14 == 1 : text = text + '\n'
-            text = text + "  " + key + " " + str(device[key][2])
-            i+=1
-        if arg == '0' :
-            if i2 % 14 == 1 : text2 = text2 + '\n'
-            text2 = text2 + "  " + key
-            i2+=1
-    label2.config(text=text2,bg="red")
-    label.config(text=text,bg = "green")
+    ligne = -1
+    i=0
+    for item in device :
+        ligne += 1 
+        if device[item][1] == '1' :
+            if device[item][3] == '1':
+                device[item][3]='0'
+                device[item][0] = datetime.now()
+            time = abs((datetime.now()-device[item][0])).total_seconds()
+            if time > device[item][2]  :
+                device[item][2] = time
+            MyLabel(rootWindow,i,ligne,item,device[item][2])
+        else :
+            MyLabel(rootWindow,i,ligne,item,0)
+
+        if ligne > 25 :
+             i += 1
+             ligne = -1
+
 
 
 def on_message(mqttsub, obj, msg):
@@ -51,21 +58,14 @@ def on_message(mqttsub, obj, msg):
         device[x['dev_id']][1] = '1'
         device[x['dev_id']][3] = '1'
         newmessage()
-
 mqttsub = mqtt.Client()
 mqttsub.on_message = on_message
-mqttsub.username_pw_set('ports_v2','ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88')
+mqttsub.username_pw_set(APPID,PSW)
 mqttsub.connect("eu.thethings.network",1883,60)
 mqttsub.subscribe("+/devices/+/up")   
 
 rootWindow = Tk()
 rootWindow.title('MQTT monitor')
-rootWindow.geometry("800x200")
-label = Label(rootWindow)
-label.grid(row=1)
-label2 = Label(rootWindow)
-label2.grid(row=2)
 newmessage()
-
 mqttsub.loop_start() 
 rootWindow.mainloop()
