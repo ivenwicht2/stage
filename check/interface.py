@@ -19,6 +19,7 @@ df = data.dropna()
 device = {}
 for col in df.Ncapteur :
         device.setdefault(col,[datetime.now(),'0',0,'0'])
+global frame
 
 def MyLabel(master,nbc,nbr,dev,txt):
         frame = Frame(master)
@@ -30,7 +31,20 @@ def MyLabel(master,nbc,nbr,dev,txt):
 
 
 
+def all_children () :
+    _list = rootWindow.winfo_children()
+    for item in _list :
+        if item.winfo_children() :
+            _list.extend(item.winfo_children())
+
+    return _list
+
+
+
+
+
 def newmessage():
+    widget_list = all_children()
     ligne = -1
     i=0
     for item in device :
@@ -49,7 +63,9 @@ def newmessage():
         if ligne > 25 :
              i += 1
              ligne = -1
-
+    
+    for item in widget_list:
+        item.destroy()
 
 
 def on_message(mqttsub, obj, msg):
@@ -58,6 +74,8 @@ def on_message(mqttsub, obj, msg):
         device[x['dev_id']][1] = '1'
         device[x['dev_id']][3] = '1'
         newmessage()
+
+
 mqttsub = mqtt.Client()
 mqttsub.on_message = on_message
 mqttsub.username_pw_set(APPID,PSW)
@@ -66,6 +84,7 @@ mqttsub.subscribe("+/devices/+/up")
 
 rootWindow = Tk()
 rootWindow.title('MQTT monitor')
+frame = Frame(rootWindow)
 newmessage()
 mqttsub.loop_start() 
 rootWindow.mainloop()
