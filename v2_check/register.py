@@ -5,16 +5,16 @@ from tkinter import messagebox as mbox
 import mysql.connector
 import pandas as pd
 
-def menu():
-    window = Tk()
-    window.title('register console')
-    window.resizable(width=False, height=False)
-    window.grid_rowconfigure(0, weight=1)
-    window.grid_columnconfigure(0,weight=2)
-    Button(window, text="Device",command=lambda:device(), fg='black', bg='white',width=20, height=5).grid(column=1,row=1)
-    window.grid_rowconfigure(3, weight=1)
-    window.grid_columnconfigure(2,weight=2)
-    window.mainloop()
+
+def menu(Mframe):
+    global mydb
+    mydb = mysql.connector.connect(
+            host="localhost",
+            user="theo",
+            passwd="root",
+            database="interface"
+            )
+    device()
 
 def device():
     file = filedialog.askopenfile(initialdir='.',filetypes=(("csv file","*.csv"),),title='Choose a file')
@@ -22,15 +22,15 @@ def device():
         data= pd.read_csv(file,usecols=[1,2,3],names=['capteur','place','port'],header=None,skiprows=2)
         data =data.dropna()
         data = data[-data['place'].str.contains("Stock")]
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT nom FROM port")
-    myresult = mycursor.fetchall()
-    mydb.commit()
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT nom FROM port")
+        myresult = mycursor.fetchall()
+        mydb.commit()
     
-    register(data['port'].unique(),myresult)
-    for capteur,place,port in zip(data['capteur'],data['place'],data['port']) :
-        register_sensor(capteur,place,port)
-    print("fini")
+        register(data['port'].unique(),myresult)
+        for capteur,place,port in zip(data['capteur'],data['place'],data['port']) :
+            register_sensor(capteur,place,port)
+        mbox.showinfo("Enregistrement capteur", "Tous les capteurs sont enregistrés")
 
 def register(port,myresult):
     for item in port :
@@ -69,20 +69,14 @@ def register_sensor(capteur,place,port):
     mycursor = mydb.cursor()
     mycursor.execute( 'select numCapteur from device where numCapteur = "{}"'.format(capteur))
     myresult = mycursor.fetchall() 
+    port = port.replace(' ','_')
+    port = port.replace("'","_")
     if myresult : 
         mycursor.execute("delete from device where numCapteur = '{}'".format(capteur))
     mycursor.execute('INSERT INTO device (numCapteur,place,port) VALUES ("{}","{}","{}")'.format(str(capteur),place,port))
     mydb.commit()
 
 
-mydb = mysql.connector.connect(
-            host="localhost",
-            user="theo",
-            passwd="root",
-            database="interface"
-            )
-
-menu()
 
 
 
