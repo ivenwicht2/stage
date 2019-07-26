@@ -27,7 +27,7 @@ def display(Mframe,port):
             frame = Frame(Mframe)
             if ligne == 3 :  colonne = 1
             frame.grid(column=colonne,row=ligne)
-            Button(frame,text="ENREGISTER", fg='white',command = lambda : register.menu(Mframe),bg='blue',width=20,height=5).grid(row = 0 ,column = 0)
+            Button(frame,text="ENREGISTER", fg='white',command = lambda : register.menu(Mframe),bg='blue',width=20,height=5,font='lucida').grid(row = 0 ,column = 0)
 
 
 def mysql():

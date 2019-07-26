@@ -62,7 +62,8 @@ def register_port(port):
             value4 VARCHAR(255),
             presence VARCHAR(255),
             time VARCHAR(255),
-            rssi VARCHAR(255))""".format(port))
+            rssi VARCHAR(255),
+            counter VARCHAR(255))""".format(port))
     mydb.commit() 
 
 def register_sensor(capteur,place,port):

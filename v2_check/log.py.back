@@ -1,0 +1,58 @@
+import matplotlib.pyplot as plt
+import matplotlib
+from bdd import *
+from tkinter import *
+
+def data_log(ligne,device,port,frame):
+    mydb = Dtb()
+    data = mydb.execute('select id,index1,index2,index3,index4,value1,value2,value3,value4,counter from {} where id = {} limit 240 '.format(port,device))
+    Button(frame,text="log",command = lambda:graphic(data)).grid(column=12,row=ligne)
+
+import numpy as np
+def graphic(log):
+    print("########")
+    index1=[]
+    index2=[]
+    index3=[]
+    index4=[]
+    counter=[] 
+    N = 0
+    for item in log :
+        id1 = 0
+        id2 = 0
+        id3 = 0
+        id4 = 0
+        if str(item[5]) != 'None' : id1 = item[5] 
+        if str(item[6]) != 'None' : id2 = item[6] 
+        if str(item[7]) != 'None' : id3 = item[7] 
+        if str(item[8]) != 'None' : id4 = item[8] 
+        index1.append(int(id1))
+        index2.append(int(id2))
+        index3.append(int(id3))
+        index4.append(int(id4))
+        counter.append(int(item[9]))
+        N += 1
+    print(index1)
+    print(index2)
+    print(index3)
+    print(index4)
+    ind = np.arange(N)
+    width = 0.35
+    p1 = plt.bar(ind,index1, width)
+    p2 = plt.bar(ind,index2, width,bottom = index1)
+    p3 = plt.bar(ind,index3, width,bottom = np.array(index2)+np.array(index1))
+    p4 = plt.bar(ind,index4, width,bottom = np.array(index3)+np.array(index2)+np.array(index1))
+    maximum = max(index1+index2+index3+index4) +10
+    fig = matplotlib.pyplot.gcf()
+    fig.set_size_inches(18.5, 10.5)
+    plt.ylabel('index')
+    plt.title('index data')
+    plt.xticks(ind, counter)
+    plt.yticks(np.arange(0, maximum, 10))
+    plt.legend((p1[0], p2[0],p3[0],p4[0]), ('index1', 'index2','index3','index4'))
+    plt.show()
+
+
+
+
+
