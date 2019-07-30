@@ -55,7 +55,10 @@ def on_message(mqttsub, obj, msg):
         for gw in gateways: 
             msg[11] = gw["rssi"]
         write(msg,device[x['dev_id']].lower())
-    else : type_message = "heartbit"
+    elif x['dev_id'] in device : 
+        print(x)
+        write_HB(x)
+
 
 def write(payload,table):
         mycursor = mydb.cursor()
@@ -65,7 +68,11 @@ def write(payload,table):
             print(e)
         mydb.commit()
 
-
+def write_HB(x):
+            mycursor = mydb.cursor()
+            print("values ({},{},{})".format(x['dev_id'],x['payload_fields']['pressure'],x['payload_fields']['temp']))
+            mycursor.execute("insert into {}_HB (id,pression,temp) values ({},{},{})".format(device[x['dev_id']].lower(),x['dev_id'],x['payload_fields']['pressure'],x['payload_fields']['temp']))
+            mydb.commit()
 
 APPID = 'ports_v2'
 PSW = 'ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88'

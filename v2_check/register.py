@@ -1,10 +1,8 @@
-
 from tkinter import filedialog
 from tkinter import *
 from tkinter import messagebox as mbox
 import mysql.connector
 import pandas as pd
-
 
 def menu(Mframe):
     global mydb
@@ -14,9 +12,9 @@ def menu(Mframe):
             passwd="root",
             database="interface"
             )
-    device()
+    device(Mframe)
 
-def device():
+def device(Mframe):
     file = filedialog.askopenfile(initialdir='.',filetypes=(("csv file","*.csv"),),title='Choose a file')
     if file != None:
         data= pd.read_csv(file,usecols=[1,2,3],names=['capteur','place','port'],header=None,skiprows=2)
@@ -31,7 +29,6 @@ def device():
         for capteur,place,port in zip(data['capteur'],data['place'],data['port']) :
             register_sensor(capteur,place,port)
         mbox.showinfo("Enregistrement capteur", "Tous les capteurs sont enregistrés")
-
 def register(port,myresult):
     for item in port :
         seen = 0
@@ -64,6 +61,11 @@ def register_port(port):
             time VARCHAR(255),
             rssi VARCHAR(255),
             counter VARCHAR(255))""".format(port))
+    mycursor.execute(""" CREATE TABLE {}_HB (
+                    id VARCHAR(255),
+                    pression VARCHAR(255),
+                    temp     VARCHAR(255))""".format(port))
+    
     mydb.commit() 
 
 def register_sensor(capteur,place,port):

@@ -15,7 +15,7 @@ class Port():
             self.top=Toplevel(self.frame,bg='white')
             self.top.resizable(width=False, height=False)
             self.top.title("{}".format(self.port))
-            self.top.geometry("780x580")
+            self.top.geometry("820x580")
             self.info = Frame(self.top,bg='white')
             self.info.grid(column=0,row=0,sticky="nsew")
             self.fen_frame()
@@ -44,13 +44,13 @@ class Port():
         Label(self.info,text="P",bg='white',width=5).grid(column=9,row=0)
         Label(self.info,text="Date",bg='white',width=30).grid(column=10,row=0)
         Label(self.info,text="RSSI",bg='white',width=5).grid(column=11,row=0)
-        Button(self.info,image=self.photo,command=lambda:self.refresh()).grid(column=12,row=0)
+        Button(self.info,image=self.photo,command=lambda:self.refresh(),anchor="center").grid(column=12,row=0)
         alldevice = mydb.execute('select numCapteur from device where port = "{}"'.format(self.port))
         scrollbar = Scrollbar(self.device)
         scrollbar.pack( side = RIGHT,fill = Y )
-        canva = tk.Canvas(self.device, yscrollcommand=scrollbar.set,width=750,height=545,bg='white')
+        canva = tk.Canvas(self.device, yscrollcommand=scrollbar.set,width=805,height=545,bg='white')
         canva.pack()
-        frame = tk.Frame(canva,width=780,height=600,bg='white')
+        frame = tk.Frame(canva,width=800,height=600,bg='white')
         ligne = 1
         for item in alldevice:
             info = self.payload(item[0])
@@ -75,7 +75,8 @@ class Port():
                     Label(frame,text="{}".format(info[9]),fg='black',bg='brown',width=5,height=2).grid(column=9,row=ligne)
                     Label(frame,text="{}".format(info[10]),fg='black',bg='green',width=30,height=2).grid(column=10,row=ligne)
                     Label(frame,text="{}".format(info[11]),fg='black',bg='purple',width=5,height=2).grid(column=11,row=ligne)
-                    log.data_log(ligne,info[0],self.port,frame)
+                    log.graphe(ligne,info[0],self.port,frame)
+#                    log.data_log(ligne,info[0],self.port,frame)
                 except Exception as e:
                      print(e)
             ligne +=1

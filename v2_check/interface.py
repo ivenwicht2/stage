@@ -1,8 +1,9 @@
 from tkinter import *
-import register
+from register import menu
 from port_class import *
 import bdd
-def menu():
+
+def menu_start():
         window = Tk()
         window.title('menu')
         window.resizable(width=False, height=False)
@@ -27,11 +28,11 @@ def display(Mframe,port):
             frame = Frame(Mframe)
             if ligne == 3 :  colonne = 1
             frame.grid(column=colonne,row=ligne)
-            Button(frame,text="ENREGISTER", fg='white',command = lambda : register.menu(Mframe),bg='blue',width=20,height=5,font='lucida').grid(row = 0 ,column = 0)
+            Button(frame,text="ENREGISTER", fg='white',command = lambda : menu(Mframe),bg='blue',width=20,height=5,font='lucida').grid(row = 0 ,column = 0)
 
 
 def mysql():
         mycursor = bdd.Dtb()
         return mycursor.execute( 'select * from  port')
         
-menu()
+menu_start()
