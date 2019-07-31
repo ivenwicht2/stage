@@ -69,18 +69,28 @@ class graphe :
         Label(top,text='value2',bg='white').grid(column=6,row=0)
         Label(top,text='value3',bg='white').grid(column=7,row=0)
         Label(top,text='value4',bg='white').grid(column=8,row=0)
-        Label(top,text='presence',bg='white').grid(column=9,row=0)
+        Label(top,text='p',bg='white').grid(column=9,row=0)
         Label(top,text='time',bg='white').grid(column=10,row=0)
         Label(top,text='rssi',bg='white').grid(column=11,row=0)
         Label(top,text='counter',bg='white').grid(column=12,row=0)
         ligne = 1
         for item in data_index : 
-            colone = 0
-            for i in item : 
-                Label(top,text = i).grid(row=ligne,column = colone)
-                colone += 1
+            Label(top,text=item[0],bg='white').grid(column=0,row=ligne)
+            Label(top,text=item[1],bg='white').grid(column=1,row=ligne)
+            Label(top,text=item[2],bg='white').grid(column=2,row=ligne)
+            Label(top,text=item[3],bg='white').grid(column=3,row=ligne)
+            Label(top,text=item[4],bg='white').grid(column=4,row=ligne)
+            Label(top,text=item[5],bg='white').grid(column=5,row=ligne)
+            Label(top,text=item[6],bg='white').grid(column=6,row=ligne)
+            Label(top,text=item[7],bg='white').grid(column=7,row=ligne)
+            Label(top,text=item[8],bg='white').grid(column=8,row=ligne)
+            Label(top,text=item[9],bg='white').grid(column=9,row=ligne)
+            time = str(item[10])
+            time = time[:19].replace('T','//')
+            Label(top,text=time,bg='white').grid(column=10,row=ligne)
+            Label(top,text=item[11],bg='white').grid(column=11,row=ligne)
+            Label(top,text=item[12],bg='white').grid(column=12,row=ligne)
             ligne += 1
-
     
 
 
