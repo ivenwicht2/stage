@@ -22,7 +22,7 @@ class Port():
         except Exception as e :
             print(e)
     def fen_frame(self):
-        self.device = Frame(self.top)
+        self.device = Frame(self.top,width=580,height=810)
         self.device.grid(column=0,row=1,sticky="nsew")
         self.dev()
 
@@ -46,11 +46,17 @@ class Port():
         Label(self.info,text="RSSI",bg='white',width=5).grid(column=11,row=0)
         Button(self.info,image=self.photo,command=lambda:self.refresh(),anchor="center").grid(column=12,row=0)
         alldevice = mydb.execute('select numCapteur from device where port = "{}"'.format(self.port))
-        scrollbar = Scrollbar(self.device)
-        scrollbar.pack( side = RIGHT,fill = Y )
-        canva = tk.Canvas(self.device, yscrollcommand=scrollbar.set,width=805,height=545,bg='white')
-        canva.pack()
-        frame = tk.Frame(canva,width=800,height=600,bg='white')
+        
+        self.canvas=Canvas(self.device)
+        frame=Frame(self.canvas)
+        myscrollbar=Scrollbar(self.device,orient="vertical",command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=myscrollbar.set)
+        myscrollbar.pack(side="right",fill="y")
+        self.canvas.pack(side="left")
+        self.canvas.create_window((0,0),window=frame,anchor='nw')
+        frame.bind("<Configure>",self.myfunction)
+        
+
         ligne = 1
         for item in alldevice:
             info = self.payload(item[0])
@@ -76,14 +82,10 @@ class Port():
                     Label(frame,text="{}".format(info[10]),fg='black',bg='green',width=30,height=2).grid(column=10,row=ligne)
                     Label(frame,text="{}".format(info[11]),fg='black',bg='purple',width=5,height=2).grid(column=11,row=ligne)
                     log.graphe(ligne,info[0],self.port,frame)
-#                    log.data_log(ligne,info[0],self.port,frame)
                 except Exception as e:
                      print(e)
             ligne +=1
 
-
-        scrollbar.config(command=canva.yview)
-        canva_window = canva.create_window( 0, 0, anchor=tk.NW, window=frame)
 
     def payload(self,item):
         info = []
@@ -104,7 +106,8 @@ class Port():
         return time
     
 
-
+    def myfunction(self,event):
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=800,height=540)
 
 
 
