@@ -17,7 +17,18 @@ class graphe :
         Button(frame,text='log_index',command=lambda:self.log_index()).grid(column=14,row=ligne)
    
     def graphic_data(self):
-        self.data = self.mydb.execute('select id,index1,index2,index3,index4,value1,value2,value3,value4,counter from {} where id = {} limit 240 '.format(self.port,self.device))
+        first = self.mydb.execute('select counter from {} where id = {} order by counter DESC limit 1'.format(self.port,self.device ))
+        self.data = self.mydb.execute('select id,index1,index2,index3,index4,value1,value2,value3,value4,counter from {} where id = {} and counter <= {} and counter > {}-50 order by counter DESC limit 240 '.format(self.port,self.device,first[0][0],first[0][0]))
+        real_data = []
+        dn = 0
+        for i in range(0,51):
+            if i < len(self.data):
+                if int(self.data[dn][9]) == int(first[0][0]) - i :
+                    real_data.append([self.data[dn][0],self.data[dn][1],self.data[dn][2],self.data[dn][3],self.data[dn][4],self.data[dn][5],self.data[dn][6],self.data[dn][7],self.data[dn][8],self.data[dn][9]])
+                    dn +=1
+                else :
+                    real_data.append([0,0,0,0,-200,0,0,0,0,int(first[0][0])-i])
+            else : real_data.append([0,0,0,0,-200,0,0,0,0,int(first[0][0])-i]) 
         index1=[]
         index2=[]
         index3=[]
@@ -25,7 +36,7 @@ class graphe :
         counter=[] 
         N = 0
         r=[]
-        for item in self.data :
+        for item in real_data :
             id1 = 0
             id2 = 0
             id3 = 0
@@ -58,7 +69,7 @@ class graphe :
         plt.show()
 
     def log_index(self):
-        data_index = self.mydb.execute('select * from {} where id = {} limit 20 '.format(self.port,self.device))
+        data_index = self.mydb.execute('select * from {} where id = {} order by counter DESC limit 20 '.format(self.port,self.device))
         top = Toplevel(self.frame,bg='white')
         Label(top,text='id',bg='white').grid(column=0,row=0)
         Label(top,text='index1',bg='white').grid(column=1,row=0)
@@ -119,7 +130,7 @@ class graphe :
             ax2.tick_params(axis='y', labelcolor=color)
             fig.tight_layout()  
             plt.show()"""
-
+            """
             fig = plt.figure(figsize=(8, 5))
             line_weight = 3
             alpha = .5
@@ -135,7 +146,35 @@ class graphe :
             ax1.legend(leg, labs, loc=0)
             plt.title('Température et pression', fontsize=20)
                     
+            plt.show()"""
+
+            fig = plt.figure()
+            ax1 = fig.add_subplot(111)
+            ax1.plot(iterable, temp)
+            ax1.set_ylabel('Température')
+
+            ax2 = ax1.twinx()
+            ax2.plot(iterable, pressure, 'r-')
+            ax2.set_ylabel('pressure', color='r')
+            for tl in ax2.get_yticklabels():
+                    tl.set_color('r')
             plt.show()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
