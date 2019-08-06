@@ -10,6 +10,9 @@ mydb = mysql.connector.connect(
        database="interface"
         )
 
+def date_diff(data):
+    return  ((datetime.utcnow()-data).total_seconds())
+	 
 
 
 def load_device():
@@ -31,9 +34,7 @@ def load_device():
 
 def on_message(mqttsub, obj, msg):
     x = json.loads(msg.payload.decode('utf-8'))
-    type_message = None
     if x['port'] == 4  and x['dev_id'] in device : 
-        type_message = 'info_mess'
         msg = 13*[0]
         data = x['payload_fields']
         msg[0] = x['dev_id'] 
@@ -56,7 +57,6 @@ def on_message(mqttsub, obj, msg):
             msg[11] = gw["rssi"]
         write(msg,device[x['dev_id']].lower())
     elif x['dev_id'] in device : 
-        print(x)
         write_HB(x)
 
 
@@ -70,21 +70,33 @@ def write(payload,table):
 
 def write_HB(x):
             mycursor = mydb.cursor()
-            print("values ({},{},{})".format(x['dev_id'],x['payload_fields']['pressure'],x['payload_fields']['temp']))
             mycursor.execute("insert into {}_HB (id,pression,temp) values ({},{},{})".format(device[x['dev_id']].lower(),x['dev_id'],x['payload_fields']['pressure'],x['payload_fields']['temp']))
             mydb.commit()
 
+def on_connect(mqttsub,userdata,flags,rc):
+    print("Connected With Result Code " + str(rc))
+    mqttsub.subscribe("+/devices/+/up",qos=1)   
+
+def on_disconnect(mqttsub, userdata, rc):
+	if rc != 0:
+		print("Unexpected MQTT disconnection. Will auto-reconnect")
+
+
+
 APPID = 'ports_v2'
 PSW = 'ttn-account-v2.HYt-o3l0JrFpIl7IXtuAlIt8VHkZxbkPG34-OTeTC88'
-
 device = load_device()
-
 mqttsub = mqtt.Client()
+mqttsub.on_connect = on_connect
 mqttsub.on_message = on_message
+mqttsub.on_disconnect = on_disconnect
 mqttsub.username_pw_set(APPID,PSW)
 mqttsub.connect("eu.thethings.network",1883,60)
-mqttsub.subscribe("+/devices/+/up")
+mqttsub.subscribe("+/devices/+/up",qos=1)
+maj = datetime.utcnow()
 while True :
     mqttsub.loop_start() 
-
-
+    if date_diff(maj) > 300 : 
+        device = load_device()
+        maj = datetime.now()
+        
