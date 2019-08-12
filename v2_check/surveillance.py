@@ -38,18 +38,15 @@ def on_message(mqttsub, obj, msg):
         msg = 13*[0]
         data = x['payload_fields']
         msg[0] = x['dev_id'] 
-        msg[12] = x['counter'] 
-        for i in range(1,4):
-            try :
-                msg[i]= data.get('index{}'.format(i+1),'None')
-                msg[i+4]= data.get('value{}'.format(i+1),'None')
-            except Exception as e:
-                print(e)
-        try : 
-            msg[4]= data.get('index4','None')
-            msg[8]= data.get('value4','None')                
-        except Exception as e:
-            print(e)
+        msg[12] = x['counter']
+        msg[1] = data.get('index1','None')
+        msg[5] = data.get('value1','None')
+        msg[2] = data.get('index2','None')
+        msg[6] = data.get('value2','None')
+        msg[3] = data.get('index3','None')
+        msg[7] = data.get('value3','None')
+        msg[4] = data.get('index4','None')
+        msg[8] = data.get('value4','None')
         msg[9] = x['payload_fields']['presence']
         msg[10] = x["metadata"]["time"]
         gateways = x["metadata"]["gateways"]
@@ -58,7 +55,6 @@ def on_message(mqttsub, obj, msg):
         write(msg,device[x['dev_id']].lower())
     elif x['dev_id'] in device : 
         write_HB(x)
-
 
 def write(payload,table):
         mycursor = mydb.cursor()
