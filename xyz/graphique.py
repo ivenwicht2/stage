@@ -54,7 +54,6 @@ def update(frame) :
         Ax = int(arX) - 1958
 
         angle = math.atan2(Ax, -1*Az) * (180 / math.pi)
-        print(angle)
 
         ax4.clear()
         ax4.quiver(0,0,0,arX,arY,arZ)
