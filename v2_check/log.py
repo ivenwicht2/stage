@@ -5,7 +5,6 @@ import pandas as pd
 from bdd import *
 from tkinter import *
 import numpy as np
-from math import * 
 
 class graphe :
     def __init__(self,ligne,device,port,frame):
@@ -28,8 +27,8 @@ class graphe :
                     real_data.append([self.data[dn][0],self.data[dn][1],self.data[dn][2],self.data[dn][3],self.data[dn][4],self.data[dn][5],self.data[dn][6],self.data[dn][7],self.data[dn][8],self.data[dn][9]])
                     dn +=1
                 else :
-                    real_data.append([0,0,0,0,-200,0,0,0,0,int(first[0][0])-i])
-            else : real_data.append([0,0,0,0,-200,0,0,0,0,int(first[0][0])-i]) 
+                    real_data.insert(0,[0,0,0,0,-200,0,0,0,0,int(first[0][0])-i])
+            else : real_data.insert(0,[0,0,0,0,-200,0,0,0,0,int(first[0][0])-i]) 
         index1=[]
         index2=[]
         index3=[]
@@ -66,10 +65,10 @@ class graphe :
             r.append(N)
             N += 1
          
-        fig, ax = plt.subplots(figsize=(10,10))
         limit = [0,254]
         normalize = matplotlib.colors.Normalize(vmin=min(limit), vmax=max(limit))
-        cmap = matplotlib.cm.get_cmap('Reds')
+        cmap = matplotlib.cm.get_cmap('jet')
+        fig,ax = plt.subplots(figsize=(10,10))
         colors1 = [cmap(normalize(value)) for value in c1]
         colors2 = [cmap(normalize(value)) for value in c2]
         colors3 = [cmap(normalize(value)) for value in c3]
@@ -80,12 +79,12 @@ class graphe :
         b2 = plt.bar(r, index3, color=colors3, edgecolor='white', width=barWidth)
         b3 = plt.bar(r, index2, color=colors2, edgecolor='white', width=barWidth)
         b4 = plt.bar(r, index1, color=colors1, edgecolor='white', width=barWidth)
-        ax, _ = matplotlib.colorbar.make_axes(ax)
-        cax, _ = matplotlib.colorbar.make_axes(ax)
-        cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
         plt.xticks(r, counter, fontweight='bold',rotation='vertical')
         plt.xlabel("counter")
         plt.ylabel("index")
+        plt.title(self.device)
+        cax, _ = matplotlib.colorbar.make_axes(ax)
+        cbar = matplotlib.colorbar.ColorbarBase(cax, cmap=cmap, norm=normalize)
         mng = plt.get_current_fig_manager()
         mng.window.showMaximized()
         plt.show()

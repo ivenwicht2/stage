@@ -3,9 +3,9 @@ from mysql.connector import connect
 class Dtb():
     def __init__ (self):
         self.mydb = connect(
-                    host="localhost",
-                    user="theo",
-                    passwd="root",
+                    host="192.168.1.58",
+                    user="bdd",
+                    passwd="nqutic",
                     database="interface"
                     ) 
     
